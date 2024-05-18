@@ -2,6 +2,7 @@ import os
 import subprocess
 
 from builder import Builder
+from monitoring import TestedAppMonitor
 
 
 class ScriptRunner:
@@ -10,7 +11,7 @@ class ScriptRunner:
         self.filename = os.path.basename(self.main_file)
         self.builder = Builder()
         self.build_dir = self.builder.build_dir
-
+        self.monitor = TestedAppMonitor(self.build_dir)
         self.builder.build(self.dir_path)
 
     @property
@@ -42,6 +43,6 @@ class ScriptRunner:
         if stderr:
             print("Error:", stderr.decode())
 
-    def run(self, mounts=[]):
+    def run(self):
         self.run_script_in_venv()
 
