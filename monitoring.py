@@ -8,12 +8,21 @@ from metrics import Metric
 from storage import BatchTempStorage
 
 
-class Monitor(ABC):
+class StaticMonitor(ABC):
     def __init__(self):
         self.start_time = time.time()
+        self.first_records = self.record_stats()
+
+    @property
+    def last_records(self):
+        return self.record_stats()
+
+    @abstractmethod
+    def record_stats(self) -> list[Metric]:
+        pass
 
 
-class LiveMonitor(Monitor):
+class LiveMonitor(ABC):
     def __init__(self):
         self.stop_flag = None
         self.time_point = 0.1  # 0.1 seconds
@@ -95,7 +104,7 @@ class MemoryMonitor(LiveMonitor):
                 Metric('swap_memory_usage', swap_memory_usage, int(time.time()))]
 
 
-class DiskMonitor(Monitor):
+class DiskMonitor(StaticMonitor):
     def get_disk_usage(self, partition):
         usage = os.statvfs(partition)
         total = usage.f_blocks * usage.f_frsize
@@ -115,7 +124,7 @@ class DiskMonitor(Monitor):
         return [Metric('disk_usage', disk_usage, int(time.time()))]
 
 
-class ProcessMonitor(Monitor):
+class ProcessMonitor(StaticMonitor):
     def get_execution_time(self):
         return time.time() - self.start_time
 
@@ -138,9 +147,9 @@ class ProcessMonitor(Monitor):
         total_thread_usage = self.get_total_thread_usage()
         current_thread_usage = self.get_current_thread_usage()
         return [Metric('process_info', process_info, int(time.time())),
-                Metric('execution_time', self.get_execution_time(), int(time.time())),
                 Metric('total_thread_usage', total_thread_usage, int(time.time())),
-                Metric('current_thread_usage', current_thread_usage, int(time.time()))]
+                Metric('current_thread_usage', current_thread_usage, int(time.time())),
+                Metric('execution_time', self.get_execution_time(), int(time.time()))]
 
 
 class CombinedMonitor:
@@ -153,8 +162,6 @@ class CombinedMonitor:
     def stop(self):
         self.cpu_monitor.stop()
         self.memory_monitor.stop()
-        self.disk_monitor.stop()
-        self.process_monitor.stop()
 
     def __enter__(self):
         return self
