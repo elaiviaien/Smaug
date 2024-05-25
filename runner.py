@@ -7,15 +7,15 @@ import signal
 
 
 class ScriptRunner:
-    def __init__(self, main_file):
+    def __init__(self, main_file, log_file):
         self.main_file = main_file
+        self.log_file = log_file
         self.filename = os.path.basename(self.main_file)
         self.builder = Builder()
         self.build_dir = self.builder.build_dir
         self.monitor = TestedAppMonitor(self.build_dir)
         self.builder.build(self.dir_path)
         self.processes = []
-        signal.signal(signal.SIGINT, self.signal_handler)
 
     @property
     def dir_path(self):
@@ -44,12 +44,12 @@ class ScriptRunner:
             process = subprocess.Popen([python_exe, script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             self.processes.append(process)
 
-    def signal_handler(self, signal, frame):
-        for process in self.processes:
-            process.terminate()
-        print('Script execution was stopped')
-        self.monitor.stop()
-        print('Monitoring was stopped')
-
     def run(self, num=1):
         self.run_script_in_venv(num)
+
+    def stop(self):
+        for process in self.processes:
+            process.terminate()
+        print('\nScript execution was stopped')
+        self.monitor.stop()
+        print('Monitoring was stopped')

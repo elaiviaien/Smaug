@@ -66,6 +66,7 @@ class CPUMonitor(LiveMonitor):
         idle_time_list_n = 3
         idle_time = cpu_delta[idle_time_list_n]
         cpu_usage = (total_time - idle_time) / total_time * 100 if total_time != 0 else 0
+        cpu_usage = round(cpu_usage, 3)
         return MetricList([Metric("cpu_usage", cpu_usage, int(time.time()))])
 
     def _get_cpu_times(self):
@@ -105,8 +106,8 @@ class MemoryMonitor(LiveMonitor):
         return swap_usage
 
     def record_stats(self):
-        virtual_memory_usage = self.get_virtual_memory_usage()
-        swap_memory_usage = self.get_swap_memory_usage()
+        virtual_memory_usage = round(self.get_virtual_memory_usage(),3)
+        swap_memory_usage = round(self.get_swap_memory_usage(),3)
         return MetricList([Metric('memory_usage', virtual_memory_usage, int(time.time())),
                            Metric('swap_memory_usage', swap_memory_usage, int(time.time()))])
 
@@ -131,19 +132,13 @@ class DiskMonitor(StaticMonitor):
     def get_disk_usage(self, partition):
         usage = os.statvfs(partition)
         total = usage.f_blocks * usage.f_frsize
-        free = usage.f_bfree * usage.f_frsize
         used = (usage.f_blocks - usage.f_bfree) * usage.f_frsize
         percent = (used / total) * 100
-        return {
-            'partition': partition,
-            'total': total,
-            'used': used,
-            'free': free,
-            'percent': percent,
-        }
+        return percent
+
 
     def record_stats(self):
-        disk_usage = self.get_disk_usage('/')
+        disk_usage = round(self.get_disk_usage('/'),3)
         return MetricList([Metric('disk_usage', disk_usage, int(time.time()))])
 
     def get_diff(self):
