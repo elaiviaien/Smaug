@@ -14,7 +14,7 @@ class ScriptRunner:
         self.build_dir = self.builder.build_dir
         self.monitor = TestedAppMonitor(self.build_dir)
         self.builder.build(self.dir_path)
-        self.process = None
+        self.processes = []
         signal.signal(signal.SIGINT, self.signal_handler)
 
     @property
@@ -37,21 +37,19 @@ class ScriptRunner:
         if not os.path.exists(self._main_file):
             raise FileNotFoundError(f"Script {self._main_file} does not exist")
 
-    def run_script_in_venv(self):
-        python_exe = f"{self.build_dir}/venv/bin/python"
-        script_path = os.path.join(self.build_dir, self.filename)
-        self.process = subprocess.Popen([python_exe, script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = self.process.communicate()
-        print("Output:", stdout.decode())
-        if stderr:
-            print("Error:", stderr.decode())
+    def run_script_in_venv(self, num):
+        for _ in range(num):
+            python_exe = f"{self.build_dir}/venv/bin/python"
+            script_path = os.path.join(self.build_dir, self.filename)
+            process = subprocess.Popen([python_exe, script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            self.processes.append(process)
 
     def signal_handler(self, signal, frame):
-        if self.process:
-            self.process.terminate()
+        for process in self.processes:
+            process.terminate()
         print('Script execution was stopped')
         self.monitor.stop()
         print('Monitoring was stopped')
 
-    def run(self):
-        self.run_script_in_venv()
+    def run(self, num=1):
+        self.run_script_in_venv(num)
