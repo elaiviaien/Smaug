@@ -8,7 +8,7 @@ from metrics import Metric
 class TempStorage:
     def __init__(self, name=None, max_size=1000):
         prefix = 'smaug_' if not name else f'smaug_{name}_'
-        self._file = tempfile.NamedTemporaryFile(mode='wb+', delete=False, prefix=prefix, suffix='.pkl')
+        self._file = tempfile.NamedTemporaryFile(mode='wb+', delete=True, prefix=prefix, suffix='.pkl')
         self.max_size = max_size * 1024 # in kilobytes
 
     def save_record(self, data: Metric):
