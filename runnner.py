@@ -3,6 +3,7 @@ import subprocess
 
 from builder import Builder
 from monitoring import TestedAppMonitor
+import signal
 
 
 class ScriptRunner:
@@ -13,6 +14,8 @@ class ScriptRunner:
         self.build_dir = self.builder.build_dir
         self.monitor = TestedAppMonitor(self.build_dir)
         self.builder.build(self.dir_path)
+        self.process = None
+        signal.signal(signal.SIGINT, self.signal_handler)
 
     @property
     def dir_path(self):
@@ -37,12 +40,18 @@ class ScriptRunner:
     def run_script_in_venv(self):
         python_exe = f"{self.build_dir}/venv/bin/python"
         script_path = os.path.join(self.build_dir, self.filename)
-        process = subprocess.Popen([python_exe, script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = process.communicate()
+        self.process = subprocess.Popen([python_exe, script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = self.process.communicate()
         print("Output:", stdout.decode())
         if stderr:
             print("Error:", stderr.decode())
 
+    def signal_handler(self, signal, frame):
+        if self.process:
+            self.process.terminate()
+        print('Script execution was stopped')
+        self.monitor.stop()
+        print('Monitoring was stopped')
+
     def run(self):
         self.run_script_in_venv()
-
