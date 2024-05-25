@@ -35,3 +35,24 @@ class Metric:
 
     def __repr__(self):
         return str(self)
+
+
+class MetricList(list):
+    def __init__(self, metrics=None):
+        if metrics is None:
+            metrics = []
+        super().__init__(metrics)
+        if len(set([metric.name for metric in self])) != len(self):
+            raise ValueError("All metrics should have unique names")
+
+    def get(self, name) -> Metric:
+        for metric in self:
+            if metric.name == name:
+                return metric
+        raise ValueError(f"Metric {name} not found")
+
+    def __str__(self):
+        return "\n".join([str(metric) for metric in self])
+
+    def __repr__(self):
+        return str(self)
