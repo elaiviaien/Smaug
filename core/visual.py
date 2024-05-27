@@ -2,7 +2,7 @@
 
 import os
 from itertools import zip_longest
-from . import metrics
+from .metrics import MetricList, MAX_VALUES, QUANTITIES
 
 
 class MetricsDisplay:
@@ -24,16 +24,16 @@ class MetricsDisplay:
             "white": "\033[1;37m",
         }
 
-    def clear_screen(self)-> None:
+    def clear_screen(self) -> None:
         """Clear the terminal screen."""
         clear_code = "\033c"
         print(clear_code, end="")
 
-    def get_terminal_height(self)-> int:
+    def get_terminal_height(self) -> int:
         """Return the height of the terminal."""
         return os.get_terminal_size().lines
 
-    def get_logs(self)-> list[str]:
+    def get_logs(self) -> list[str]:
         """Return the last N logs from the log file."""
         num_lines = self.get_terminal_height() - 1
         with open(self.log_file, "r", encoding="utf-8") as file:
@@ -62,7 +62,7 @@ class MetricsDisplay:
 
         return f"{timestamp} {level} {info}"
 
-    def rate_value_color(self, value: int | float, max_value: int | float)-> str:
+    def rate_value_color(self, value: int | float, max_value: int | float) -> str:
         """Return a color for a value based on a maximum value."""
         default_color = "magenta"
         ok_color = "green"
@@ -90,24 +90,23 @@ class MetricsDisplay:
             for word in table_line.split("|"):
                 if word.strip():
                     table_line = table_line.replace(
-                        word.strip(), self.color_word(
-                            word.strip(), header_color))
+                        word.strip(), self.color_word(word.strip(), header_color)
+                    )
         else:
             metric_name = table_line.split("|")[1].strip()
-            metric_max_value = metrics.MAX_VALUES.get(metric_name, 0)
+            metric_max_value = MAX_VALUES.get(metric_name, 0)
             color = self.rate_value_color(
                 float(table_line.split("|")[2].strip()), metric_max_value
             )
             for word in table_line.split("|"):
                 if word.strip():
-                    table_line = table_line.replace(
-                        word, self.color_word(word, color))
+                    table_line = table_line.replace(word, self.color_word(word, color))
         table_line = table_line.replace(
             "|", self.colors[borders_color] + "|" + "\033[0m"
         )
         return table_line
 
-    def get_max_len(self)-> int:
+    def get_max_len(self) -> int:
         """Return the maximum length of the metric names and values."""
         return max(
             (
@@ -118,7 +117,7 @@ class MetricsDisplay:
             for metric in self.metrics
         )
 
-    def display(self)-> None:
+    def display(self) -> None:
         """Display the metrics and logs."""
         metric_col_len = self.get_max_len() + 2
         value_col_len = 10
@@ -130,7 +129,8 @@ class MetricsDisplay:
         split_row = "+" + "-" * split_row_len + "+\n"
         header = (
             f"| {'Metric name'.center(metric_col_len)} | {'Value'.center(value_col_len)}"
-            f" | {'Q'.center(q_col_len)} |\n")
+            f" | {'Q'.center(q_col_len)} |\n"
+        )
 
         self.clear_screen()
         table = ""
@@ -138,16 +138,17 @@ class MetricsDisplay:
         table += header
         table += split_row
         for metric in self.metrics:
-            table += (f"| {metric.name.center(metric_col_len)} "
-                      f"| {str(metric.value).center(value_col_len)} "
-                      f"| {metrics.QUANTITIES.get(metric.name).center(q_col_len)} |\n")
+            table += (
+                f"| {metric.name.center(metric_col_len)} "
+                f"| {str(metric.value).center(value_col_len)} "
+                f"| {QUANTITIES.get(metric.name).center(q_col_len)} |\n"
+            )
         table += split_row
         table_lines = table.split("\n")
 
         logs = self.get_logs()
         logs = [line.strip() for line in logs]
-        for table_line, log_line in zip_longest(
-                table_lines, logs, fillvalue=""):
+        for table_line, log_line in zip_longest(table_lines, logs, fillvalue=""):
             if table_line and table_len != "\n" and table_lines[-1] != table_line:
                 print(
                     f"{self.color_table(table_line)}{' '.center(space_len)}"
@@ -158,7 +159,7 @@ class MetricsDisplay:
                 offset = table_len + space_len + 2
                 print(f"{' '.center(offset)} {self.color_log(log_line)}")
 
-    def update(self, new_metrics: metrics.MetricList)-> None:
+    def update(self, new_metrics: MetricList) -> None:
         """Update the displayed metrics with new metrics."""
         self.metrics = new_metrics
         self.display()

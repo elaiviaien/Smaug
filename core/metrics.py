@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Any
 import pickle
 
+
 MAX_VALUES = {
     "cpu_usage": 100,
     "memory_usage": 100,
@@ -29,31 +30,31 @@ class Metric:
     epoch: int
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any])-> "Metric":
+    def from_dict(cls, data: dict[str, Any]) -> "Metric":
         """Return a Metric object from the given dictionary."""
         return cls(data["name"], data["value"], data["epoch"])
 
-    def to_dict(self)-> dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Return the metric as a dictionary."""
         return {"name": self.name, "value": self.value, "epoch": self.epoch}
 
-    def keys(self)-> list[str]:
+    def keys(self) -> list[str]:
         """Return the keys of the metric."""
         return self.to_dict().keys()
 
-    def to_bytes(self)-> bytes:
+    def to_bytes(self) -> bytes:
         """Return the metric as bytes."""
         return pickle.dumps(self.to_dict())
 
     @classmethod
-    def from_bytes(cls, data: bytes)-> "Metric":
+    def from_bytes(cls, data: bytes) -> "Metric":
         """Return a Metric object from the given bytes."""
         return cls.from_dict(pickle.loads(data))
 
-    def __str__(self)-> str:
+    def __str__(self) -> str:
         return f"{self.name}: {self.value} (epoch {self.epoch})"
 
-    def __repr__(self)-> str:
+    def __repr__(self) -> str:
         return str(self)
 
 
@@ -74,8 +75,8 @@ class MetricList(list):
                 return metric
         raise ValueError(f"Metric {name} not found")
 
-    def __str__(self)-> str:
+    def __str__(self) -> str:
         return "\n".join([str(metric) for metric in self])
 
-    def __repr__(self)-> str:
+    def __repr__(self) -> str:
         return str(self)

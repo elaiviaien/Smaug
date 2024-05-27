@@ -6,6 +6,9 @@ from pickle import UnpicklingError
 from typing import Any
 
 from .metrics import Metric
+from .logger import setup_logger
+
+logger = setup_logger("smaug")
 
 
 class TempStorage:
@@ -18,12 +21,12 @@ class TempStorage:
         )
         self.max_size = max_size * 1024  # in kilobytes
 
-    def save_record(self, data: Metric)-> None:
+    def save_record(self, data: Metric) -> None:
         """Save a record to the storage."""
         pickle.dump(data.to_bytes(), self._file)
         self._file.flush()
 
-    def get_record(self, epoch: int)-> Metric:
+    def get_record(self, epoch: int) -> Metric | None:
         """Get a record from the storage."""
         self._file.seek(0)
         while True:
@@ -47,7 +50,7 @@ class TempStorage:
                 break
         return records[-tail:]
 
-    def delete_record(self, epoch: int)-> None:
+    def delete_record(self, epoch: int) -> None:
         """Delete a record from the storage."""
         self._file.seek(0)
         records = []

@@ -1,13 +1,17 @@
 """ The main application that runs the script and collects the metrics. """
-import logging
+
+import argparse
 import signal
+import sys
 import threading
 import time
-import argparse
 
+from core.logger import setup_logger, LoggerWriter
 from core.runner import ScriptRunner
 from core.visual import MetricsDisplay
-logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+
+logger = setup_logger("smaug")
+sys.stderr = LoggerWriter(logger.error)
 
 
 class App:
@@ -25,12 +29,12 @@ class App:
         self.collect_data_thread.start()
         signal.signal(signal.SIGINT, self.signal_handler)
 
-    def signal_handler(self, signal, frame)-> None:
+    def signal_handler(self, signal, frame) -> None:
         """Handle the SIGINT signal to stop the application."""
         self.stop_flag = True
         self.runner.stop()
 
-    def _collect_data(self)-> None:
+    def _collect_data(self) -> None:
         collect_interval = 0.3  # 0.3 seconds
         while not self.stop_flag:
             metrics = (

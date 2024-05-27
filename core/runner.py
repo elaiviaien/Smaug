@@ -6,12 +6,20 @@ from typing import NoReturn
 
 from .builder import Builder
 from .monitoring import TestedAppMonitor
+from .logger import setup_logger
+
+logger = setup_logger("smaug")
 
 
 class ScriptRunner:
     """Run a script and monitor it."""
 
     def __init__(self, main_file: str, log_file: str):
+        logger.info(
+            "Initializing ScriptRunner with main_file: %s and log_file: %s",
+            main_file,
+            log_file,
+        )
         self.main_file = main_file
         self.log_file = log_file
         self.filename = os.path.basename(self.main_file)
@@ -19,21 +27,22 @@ class ScriptRunner:
         self.monitor = TestedAppMonitor(self.builder.build_dir)
         self.builder.build(self.dir_path)
         self.processes = []
+        logger.info("Initialized ScriptRunner")
 
     @property
-    def dir_path(self)->str:
+    def dir_path(self) -> str:
         """Return the directory path of the main file."""
         if os.path.isabs(self.main_file):
             return os.path.dirname(self.main_file)
         return os.path.dirname(os.path.abspath(self.main_file))
 
     @property
-    def main_file(self)->str:
+    def main_file(self) -> str:
         """Return the main file path."""
         return self._main_file
 
     @main_file.setter
-    def main_file(self, path: str)->None|NoReturn:
+    def main_file(self, path: str) -> None | NoReturn:
         if os.path.isabs(path):
             self._main_file = path
         else:
@@ -41,8 +50,9 @@ class ScriptRunner:
         if not os.path.exists(self._main_file):
             raise FileNotFoundError(f"Script {self._main_file} does not exist")
 
-    def run_script_in_venv(self, num: int)->None:
+    def run_script_in_venv(self, num: int) -> None:
         """Run the script in a virtual environment."""
+        logger.info("Starting to run script in virtual environment %s times", num)
         for _ in range(num):
             python_exe = f"{self.builder.build_dir}/venv/bin/python"
             script_path = os.path.join(self.builder.build_dir, self.filename)
@@ -52,13 +62,18 @@ class ScriptRunner:
                 stderr=subprocess.PIPE,
             )
             self.processes.append(process)
+        logger.info("Finished running script in virtual environment")
 
-    def run(self, num: int = 1)->None:
+    def run(self, num: int = 1) -> None:
         """Run the script."""
+        logger.info("Starting to run the script %s times", num)
         self.run_script_in_venv(num)
+        logger.info("Finished running the script")
 
-    def stop(self)->None:
+    def stop(self) -> None:
         """Stop the script execution and monitoring."""
+        logger.info("Stopping the script execution and monitoring")
         for process in self.processes:
             process.terminate()
         self.monitor.stop()
+        logger.info("Stopped the script execution and monitoring")
