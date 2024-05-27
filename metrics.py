@@ -1,3 +1,4 @@
+"""This module contains classes for metrics and metric lists."""
 from dataclasses import dataclass
 from typing import Any
 import pickle
@@ -14,33 +15,37 @@ QUANTITIES = {
     "swap_memory_usage": "%",
     "disk_usage": "%",
     "execution_time": "s",
-    "total_thread_usage": "n"
+    "total_thread_usage": "n",
 }
+
+
 @dataclass
 class Metric:
+    """A metric with a name, value, and epoch."""
     name: str
     value: Any
     epoch: int
 
     @classmethod
     def from_dict(cls, data):
-        return cls(data['name'], data['value'], data['epoch'])
+        """Return a Metric object from the given dictionary."""
+        return cls(data["name"], data["value"], data["epoch"])
 
     def to_dict(self):
-        return {
-            "name": self.name,
-            "value": self.value,
-            "epoch": self.epoch
-        }
+        """Return the metric as a dictionary."""
+        return {"name": self.name, "value": self.value, "epoch": self.epoch}
 
     def keys(self):
+        """Return the keys of the metric."""
         return self.to_dict().keys()
 
     def to_bytes(self):
+        """Return the metric as bytes."""
         return pickle.dumps(self.to_dict())
 
     @classmethod
     def from_bytes(cls, data):
+        """Return a Metric object from the given bytes."""
         return cls.from_dict(pickle.loads(data))
 
     def __str__(self):
@@ -51,6 +56,7 @@ class Metric:
 
 
 class MetricList(list):
+    """A list of metrics."""
     def __init__(self, metrics=None):
         if metrics is None:
             metrics = []
@@ -59,6 +65,7 @@ class MetricList(list):
             raise ValueError("All metrics should have unique names")
 
     def get(self, name) -> Metric:
+        """Return the metric with the specified name."""
         for metric in self:
             if metric.name == name:
                 return metric

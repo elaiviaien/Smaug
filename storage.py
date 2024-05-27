@@ -1,3 +1,4 @@
+"""Storage classes for metrics."""
 import pickle
 import tempfile
 from pickle import UnpicklingError
@@ -6,27 +7,33 @@ from metrics import Metric
 
 
 class TempStorage:
+    """A temporary storage for metrics."""
     def __init__(self, name=None, max_size=1000):
-        prefix = 'smaug_' if not name else f'smaug_{name}_'
-        self._file = tempfile.NamedTemporaryFile(mode='wb+', delete=True, prefix=prefix, suffix='.pkl')
-        self.max_size = max_size * 1024 # in kilobytes
+        prefix = "smaug_" if not name else f"smaug_{name}_"
+        self._file = tempfile.NamedTemporaryFile(
+            mode="wb+", delete=True, prefix=prefix, suffix=".pkl"
+        )
+        self.max_size = max_size * 1024  # in kilobytes
 
     def save_record(self, data: Metric):
+        """Save a record to the storage."""
         pickle.dump(data.to_bytes(), self._file)
         self._file.flush()
 
     def get_record(self, epoch):
+        """Get a record from the storage."""
         self._file.seek(0)
         while True:
             try:
                 record = pickle.load(self._file)
-                if record.get('epoch') == epoch:
+                if record.get("epoch") == epoch:
                     return Metric.from_dict(record)
             except EOFError:
                 break
         return None
 
     def get_last_records(self, tail=0) -> list[Metric]:
+        """Get the last N records from the storage."""
         self._file.seek(0)
         records = []
         while True:
@@ -38,12 +45,13 @@ class TempStorage:
         return records[-tail:]
 
     def delete_record(self, epoch):
+        """Delete a record from the storage."""
         self._file.seek(0)
         records = []
         while True:
             try:
                 record = pickle.load(self._file)
-                if record.get('epoch') != epoch:
+                if record.get("epoch") != epoch:
                     records.append(record)
             except EOFError:
                 break
@@ -58,6 +66,7 @@ class TempStorage:
 
 
 class BatchTempStorage(dict):
+    """A batch temporary storage for metrics."""
     def __missing__(self, key) -> TempStorage:
         self[key] = TempStorage(key)
         return self[key]
