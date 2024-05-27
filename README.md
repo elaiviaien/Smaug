@@ -78,4 +78,4 @@ Contributions are welcome! Please read the [contributing guidelines](CONTRIBUTIN
 
 ## License
 
-This project is licensed under the terms of the MIT license. See the [LICENSE](LICENSE.md) file for details.
+This project is licensed under the terms of the MIT license. See the [LICENSE](LICENSE) file for details.
