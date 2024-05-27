@@ -11,7 +11,8 @@ from visual import MetricsDisplay
 
 class App:
     """The main application class that runs the script and collects the metrics."""
-    def __init__(self, script_file, num):
+
+    def __init__(self, script_file: str, num: int):
         log_file = "smaug_logs.log"
         self.runner = ScriptRunner(script_file, log_file)
         self.runner.run(num)
@@ -23,12 +24,12 @@ class App:
         self.collect_data_thread.start()
         signal.signal(signal.SIGINT, self.signal_handler)
 
-    def signal_handler(self, signal, frame):
+    def signal_handler(self, signal, frame)-> None:
         """Handle the SIGINT signal to stop the application."""
         self.stop_flag = True
         self.runner.stop()
 
-    def _collect_data(self):
+    def _collect_data(self)-> None:
         collect_interval = 0.3  # 0.3 seconds
         while not self.stop_flag:
             metrics = (

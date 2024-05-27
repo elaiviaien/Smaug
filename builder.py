@@ -1,4 +1,5 @@
 """ A module to build a project."""
+
 import os
 import shutil
 import subprocess
@@ -8,11 +9,12 @@ import venv
 
 class Builder:
     """Builds a project."""
+
     def __init__(self):
         self.build_dir = tempfile.mkdtemp(prefix="smaug_")
         self.venv_dir = os.path.join(self.build_dir, "venv")
 
-    def copy_files(self, dir_path):
+    def copy_files(self, dir_path: str)->None:
         """Copy files from the given directory to the build directory."""
         for item in os.listdir(dir_path):
             s = os.path.join(dir_path, item)
@@ -22,11 +24,11 @@ class Builder:
             else:
                 shutil.copy2(s, d)
 
-    def create_venv(self):
+    def create_venv(self)->None:
         """Create a virtual environment."""
         venv.create(self.venv_dir, with_pip=True)
 
-    def install_dependencies(self):
+    def install_dependencies(self)->None:
         """Install dependencies from requirements.txt."""
         pip_exe = os.path.join(self.venv_dir, "bin", "pip")
         try:
@@ -45,7 +47,7 @@ class Builder:
             print(f"Output: {e.output.decode()}")
             print(f"Error: {e.stderr.decode()}")
 
-    def build(self, dir_path):
+    def build(self, dir_path: str)->None:
         """Build the project."""
         self.copy_files(dir_path)
         self.create_venv()
@@ -53,5 +55,5 @@ class Builder:
         if "requirements.txt" in os.listdir(self.build_dir):
             self.install_dependencies()
 
-    def __del__(self):
+    def __del__(self)->None:
         shutil.rmtree(self.build_dir)

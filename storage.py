@@ -1,26 +1,29 @@
 """Storage classes for metrics."""
+
 import pickle
 import tempfile
 from pickle import UnpicklingError
+from typing import Any
 
 from metrics import Metric
 
 
 class TempStorage:
     """A temporary storage for metrics."""
-    def __init__(self, name=None, max_size=1000):
+
+    def __init__(self, name: str = None, max_size: int = 1000):
         prefix = "smaug_" if not name else f"smaug_{name}_"
         self._file = tempfile.NamedTemporaryFile(
             mode="wb+", delete=True, prefix=prefix, suffix=".pkl"
         )
         self.max_size = max_size * 1024  # in kilobytes
 
-    def save_record(self, data: Metric):
+    def save_record(self, data: Metric)-> None:
         """Save a record to the storage."""
         pickle.dump(data.to_bytes(), self._file)
         self._file.flush()
 
-    def get_record(self, epoch):
+    def get_record(self, epoch: int)-> Metric:
         """Get a record from the storage."""
         self._file.seek(0)
         while True:
@@ -32,7 +35,7 @@ class TempStorage:
                 break
         return None
 
-    def get_last_records(self, tail=0) -> list[Metric]:
+    def get_last_records(self, tail: int = 0) -> list[Metric]:
         """Get the last N records from the storage."""
         self._file.seek(0)
         records = []
@@ -44,7 +47,7 @@ class TempStorage:
                 break
         return records[-tail:]
 
-    def delete_record(self, epoch):
+    def delete_record(self, epoch: int)-> None:
         """Delete a record from the storage."""
         self._file.seek(0)
         records = []
@@ -67,6 +70,7 @@ class TempStorage:
 
 class BatchTempStorage(dict):
     """A batch temporary storage for metrics."""
-    def __missing__(self, key) -> TempStorage:
+
+    def __missing__(self, key: Any) -> TempStorage:
         self[key] = TempStorage(key)
         return self[key]
