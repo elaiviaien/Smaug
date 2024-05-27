@@ -36,7 +36,7 @@ python3 main.py -h
 
 ## Requirements
 
-Smaug requires Python 3 to run. You can download the latest version of Python from the official website: [https://www.python.org/downloads/](https://www.python.org/downloads/)
+Smaug requires Python 3.10<= to run. You can download the latest version of Python from the official website: [https://www.python.org/downloads/](https://www.python.org/downloads/)
 
 ## Installation
 
