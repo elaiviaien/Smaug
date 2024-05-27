@@ -5,7 +5,7 @@ import tempfile
 from pickle import UnpicklingError
 from typing import Any
 
-from metrics import Metric
+from .metrics import Metric
 
 
 class TempStorage:

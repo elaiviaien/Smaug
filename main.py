@@ -1,5 +1,5 @@
 """ The main application that runs the script and collects the metrics. """
-
+import logging
 import signal
 import threading
 import time
@@ -7,6 +7,7 @@ import argparse
 
 from core.runner import ScriptRunner
 from core.visual import MetricsDisplay
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 
 class App:

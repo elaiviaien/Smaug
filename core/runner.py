@@ -4,8 +4,8 @@ import os
 import subprocess
 from typing import NoReturn
 
-from builder import Builder
-from monitoring import TestedAppMonitor
+from .builder import Builder
+from .monitoring import TestedAppMonitor
 
 
 class ScriptRunner:

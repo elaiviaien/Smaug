@@ -8,8 +8,8 @@ from abc import abstractmethod, ABC
 from types import TracebackType
 from typing import Type, Optional
 
-from metrics import Metric, MetricList
-from storage import BatchTempStorage
+from .metrics import Metric, MetricList
+from .storage import BatchTempStorage
 
 
 class StaticMonitor(ABC):

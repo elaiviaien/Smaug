@@ -2,7 +2,7 @@
 
 import os
 from itertools import zip_longest
-import metrics
+from . import metrics
 
 
 class MetricsDisplay:
