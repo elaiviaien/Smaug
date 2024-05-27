@@ -10,7 +10,7 @@ If you've noticed a bug or have a feature request, make one! It's generally best
 
 If this is something you think you can fix, then fork Smaug and create a branch with a descriptive name.
 
-A good branch name would be (where issue #325 is the ticket you're working on):
+A good branch name would be (where issue #55 is the ticket you're working on):
 
 ```bash
 git checkout -b 55-add-nodejs-support
