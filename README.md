@@ -57,7 +57,7 @@ Here are some potential enhancements and features that could be added to Smaug:
 
 - [ ] **Logging**: Add a feature to log the monitoring data to a file for later analysis.
 
-- [ ] **Type hints**: Add type hints to the codebase to improve readability and maintainability.
+- [x] **Type hints**: Add type hints to the codebase to improve readability and maintainability.
 
 - [ ] **Max load testing**: Add a feature to test the maximum number of instances of a script that can be run simultaneously.
 
