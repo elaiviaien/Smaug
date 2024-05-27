@@ -5,8 +5,8 @@ import threading
 import time
 import argparse
 
-from runner import ScriptRunner
-from visual import MetricsDisplay
+from core.runner import ScriptRunner
+from core.visual import MetricsDisplay
 
 
 class App:
