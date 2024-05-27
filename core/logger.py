@@ -3,21 +3,42 @@
 import logging
 
 
+def get_file_handler(name: str) -> logging.FileHandler:
+    """Return a file handler with the specified name."""
+    handler = logging.FileHandler(f"{name}.log")
+    handler.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    handler.setFormatter(formatter)
+
+    return handler
+
+
+def get_stream_handler(name: str) -> logging.StreamHandler:
+    """Return a stream handler with the specified name."""
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter("%(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+
+    return handler
+
+
 def setup_logger(name: str) -> logging.Logger:
     """Set up a logger with a file handler."""
     logger = logging.getLogger(f"{name}_logger")
     # set all levels
     logger.setLevel(logging.DEBUG)
     if not logger.hasHandlers():
-        handler = logging.FileHandler(f"{name}.log")
-        handler.setLevel(logging.DEBUG)
 
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
-        handler.setFormatter(formatter)
+        file_handler = get_file_handler(name)
+        logger.addHandler(file_handler)
 
-        logger.addHandler(handler)
+        stream_handler = get_stream_handler(name)
+        logger.addHandler(stream_handler)
 
     return logger
 
