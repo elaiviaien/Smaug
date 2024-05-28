@@ -1,6 +1,7 @@
 """ The main application that runs the script and collects the metrics. """
 
 import argparse
+import logging
 import signal
 import sys
 import threading
@@ -11,18 +12,17 @@ from core.runner import ScriptRunner
 from core.visual import MetricsDisplay
 
 logger = setup_logger("smaug")
-sys.stderr = LoggerWriter(logger.error)
+sys.stderr = LoggerWriter(logger, logging.ERROR)
 
 
 class App:
     """The main application class that runs the script and collects the metrics."""
 
     def __init__(self, script_file: str, num: int):
-        log_file = "smaug_logs.log"
-        self.runner = ScriptRunner(script_file, log_file)
+        self.runner = ScriptRunner(script_file)
         self.runner.run(num)
         self.monitor = self.runner.monitor
-        self.display = MetricsDisplay(log_file)
+        self.display = MetricsDisplay()
 
         self.stop_flag = False
         self.collect_data_thread = threading.Thread(target=self._collect_data)

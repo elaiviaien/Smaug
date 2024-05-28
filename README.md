@@ -55,7 +55,7 @@ It will run the demo script once and monitor ( chrome instance ) its performance
 
 Here are some potential enhancements and features that could be added to Smaug:
 
-- [ ] **Logging**: Add a feature to log the monitoring data to a file for later analysis.
+- [x] **Logging**: Add a feature to log the monitoring data to a file for later analysis.
 
 - [x] **Type hints**: Add type hints to the codebase to improve readability and maintainability.
 

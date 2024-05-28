@@ -8,10 +8,9 @@ from .metrics import MetricList, MAX_VALUES, QUANTITIES
 class MetricsDisplay:
     """A class to display metrics and logs in the terminal."""
 
-    def __init__(self, log_file: str):
+    def __init__(self):
         """Initialize the MetricsDisplay object."""
         self.metrics = None
-        self.log_file = log_file
         self.last_update = 0
         self.colors = {
             "black": "\033[1;30m",
@@ -36,8 +35,12 @@ class MetricsDisplay:
     def get_logs(self) -> list[str]:
         """Return the last N logs from the log file."""
         num_lines = self.get_terminal_height() - 1
-        with open(self.log_file, "r", encoding="utf-8") as file:
-            logs = file.readlines()[-num_lines:]
+        log_files = [f for f in os.listdir("logs") if f.startswith("smaug_test")]
+        lines_per_file = num_lines // len(log_files)
+        logs = []
+        for log_file in log_files:
+            with open(f"logs/{log_file}", "r") as f:
+                logs.extend(f.readlines()[-lines_per_file:])
         return logs
 
     def colored(self, text: str, color: str):
