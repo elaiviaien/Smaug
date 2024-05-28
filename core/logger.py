@@ -16,7 +16,7 @@ def get_file_handler(name: str) -> logging.FileHandler:
     return handler
 
 
-def get_stream_handler(name: str) -> logging.StreamHandler:
+def get_stream_handler() -> logging.StreamHandler:
     """Return a stream handler with the specified name."""
     handler = logging.StreamHandler()
     handler.setLevel(logging.DEBUG)
@@ -27,7 +27,9 @@ def get_stream_handler(name: str) -> logging.StreamHandler:
     return handler
 
 
-def setup_logger(name: str, file_handler:bool = True, stream_handler:bool = True) -> logging.Logger:
+def setup_logger(
+    name: str, file_handler: bool = True, stream_handler: bool = True
+) -> logging.Logger:
     """Set up a logger with a file handler."""
     logger = logging.getLogger(f"{name}_logger")
     # set all levels
@@ -37,9 +39,8 @@ def setup_logger(name: str, file_handler:bool = True, stream_handler:bool = True
             file_handler = get_file_handler(name)
             logger.addHandler(file_handler)
         if stream_handler:
-            stream_handler = get_stream_handler(name)
+            stream_handler = get_stream_handler()
             logger.addHandler(stream_handler)
-
 
     return logger
 

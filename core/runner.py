@@ -1,5 +1,5 @@
 """ Run a script and monitor it. """
-import logging
+
 import os
 import subprocess
 from threading import Thread
@@ -7,7 +7,7 @@ from typing import NoReturn
 
 from .builder import Builder
 from .monitoring import TestedAppMonitor
-from .logger import setup_logger, LoggerWriter, get_file_handler
+from .logger import setup_logger
 
 logger = setup_logger(f"smaug_{os.getpid()}")
 
@@ -49,9 +49,12 @@ class ScriptRunner:
             self._main_file = os.path.abspath(path)
         if not os.path.exists(self._main_file):
             raise FileNotFoundError(f"Script {self._main_file} does not exist")
+
     def _log_output(self, process) -> None:
         """Log the output of the script."""
-        test_logger = setup_logger(f"smaug_{os.getpid()}_test_{process.pid}", stream_handler=False)
+        test_logger = setup_logger(
+            f"smaug_{os.getpid()}_test_{process.pid}", stream_handler=False
+        )
         while process.poll() is None:
             output = process.stdout.readline().decode().strip()
             while output:
@@ -66,7 +69,7 @@ class ScriptRunner:
     def run_script_in_venv(self, num: int) -> None:
         """Run the script in a virtual environment."""
         logger.info("Starting to run script in virtual environment %s times", num)
-        for i in range(num):
+        for _ in range(num):
             python_exe = f"{self.builder.build_dir}/venv/bin/python"
             script_path = os.path.join(self.builder.build_dir, self.filename)
             if self.use_buffer:
@@ -74,9 +77,7 @@ class ScriptRunner:
             else:
                 cmd_args = [python_exe, "-u", script_path]
             process = subprocess.Popen(
-                cmd_args,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                cmd_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
             self.processes.append(process)
             Thread(target=self._log_output, args=(process,), daemon=True).start()

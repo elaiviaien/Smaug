@@ -32,8 +32,14 @@ class App:
         self.collect_data_thread.start()
         signal.signal(signal.SIGINT, self.signal_handler)
 
+        self._wait_scripts()
+
     def signal_handler(self, signal, frame) -> None:
         """Handle the SIGINT signal to stop the application."""
+        self.stop()
+
+    def stop(self) -> None:
+        """Stop the application."""
         self.stop_flag = True
         self.runner.stop()
 
@@ -48,24 +54,33 @@ class App:
             self.display.update(metrics)
             time.sleep(collect_interval)
 
+    def _wait_scripts(self) -> None:
+        """Wait for the scripts to finish."""
+        for process in self.runner.processes:
+            process.wait()
+        self.stop()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Run the application with a specified main file."
     )
-    parser.add_argument("-mf","--main-file",
-                        type=str, help="The main file to run (path)")
     parser.add_argument(
-        "-n","--num",
+        "-mf", "--main-file", type=str, help="The main file to run (path)"
+    )
+    parser.add_argument(
+        "-n",
+        "--num",
         type=int,
         default=1,
         help="The number of times to run your script. Default is 1",
     )
     parser.add_argument(
-        "-ub", "--use-buffer",
-        type=lambda x: (str(x).lower() in ['true', '1', 'yes']),
+        "-ub",
+        "--use-buffer",
+        type=lambda x: (str(x).lower() in ["true", "1", "yes"]),
         default=True,
-        help="Use buffer for the script output. Default is True"
+        help="Use buffer for the script output. Default is True",
     )
 
     args = parser.parse_args()
