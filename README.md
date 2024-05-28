@@ -68,7 +68,7 @@ It will run the demo script once and monitor ( chrome instance ) its performance
 
 Here are some potential enhancements and features that could be added to Smaug:
 
-- [x] **Logging**: Add a feature to log the monitoring data to a file for later analysis.
+- [x] **Logging**: Add a feature to log the output of scripts
 
 - [x] **Type hints**: Add type hints to the codebase to improve readability and maintainability.
 
@@ -80,7 +80,7 @@ Here are some potential enhancements and features that could be added to Smaug:
 
 - [ ] **Alert System**: Implement an alert system that notifies the user when certain thresholds are exceeded.
 
-- [ ] **Logging to File**: Add an option to log the monitoring data to a file for later analysis.
+- [ ] **Logging monitoring**: Add an option to log the monitoring data to a file for later analysis.
 
 - [ ] **Support for Other Languages**: Extend Smaug to support scripts written in languages other than Python.
 
