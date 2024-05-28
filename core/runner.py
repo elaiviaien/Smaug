@@ -9,7 +9,7 @@ from .builder import Builder
 from .monitoring import TestedAppMonitor
 from .logger import setup_logger, LoggerWriter, get_file_handler
 
-logger = setup_logger("smaug")
+logger = setup_logger(f"smaug_{os.getpid()}")
 
 
 class ScriptRunner:
@@ -51,7 +51,7 @@ class ScriptRunner:
             raise FileNotFoundError(f"Script {self._main_file} does not exist")
     def _log_output(self, process) -> None:
         """Log the output of the script."""
-        test_logger = setup_logger(f"smaug_test_{process.pid}", stream_handler=False)
+        test_logger = setup_logger(f"smaug_{os.getpid()}_test_{process.pid}", stream_handler=False)
         while process.poll() is None:
             output = process.stdout.readline().decode().strip()
             while output:

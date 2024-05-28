@@ -12,7 +12,7 @@ from core.logger import setup_logger, LoggerWriter
 from core.runner import ScriptRunner
 from core.visual import MetricsDisplay
 
-logger = setup_logger("smaug")
+logger = setup_logger(f"smaug_{os.getpid()}")
 sys.stderr = LoggerWriter(logger, logging.ERROR)
 
 

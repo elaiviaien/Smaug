@@ -1,5 +1,5 @@
 """Storage classes for metrics."""
-
+import os
 import pickle
 import tempfile
 from pickle import UnpicklingError
@@ -8,7 +8,7 @@ from typing import Any
 from .metrics import Metric
 from .logger import setup_logger
 
-logger = setup_logger("smaug")
+logger = setup_logger(f"smaug_{os.getpid()}")
 
 
 class TempStorage:

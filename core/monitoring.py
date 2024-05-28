@@ -12,7 +12,7 @@ from .metrics import Metric, MetricList
 from .storage import BatchTempStorage
 from .logger import setup_logger
 
-logger = setup_logger("smaug")
+logger = setup_logger(f"smaug_{os.getpid()}")
 
 
 class StaticMonitor(ABC):

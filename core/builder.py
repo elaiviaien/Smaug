@@ -9,7 +9,7 @@ import venv
 
 from .logger import setup_logger
 
-logger = setup_logger("smaug")
+logger = setup_logger(f"smaug_{os.getpid()}")
 
 
 class Builder:

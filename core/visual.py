@@ -35,7 +35,7 @@ class MetricsDisplay:
     def get_logs(self) -> list[str]:
         """Return the last N logs from the log file."""
         num_lines = self.get_terminal_height() - 1
-        log_files = [f for f in os.listdir("logs") if f.startswith("smaug_test")]
+        log_files = [f for f in os.listdir("logs") if f.startswith(f"smaug_{os.getpid()}_test")]
         lines_per_file = num_lines // len(log_files)
         logs = []
         for log_file in log_files:
