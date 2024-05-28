@@ -15,12 +15,13 @@ logger = setup_logger("smaug")
 class ScriptRunner:
     """Run a script and monitor it."""
 
-    def __init__(self, main_file: str):
+    def __init__(self, main_file: str, use_buffer: bool):
         logger.info(
             "Initializing ScriptRunner with main_file: %s",
             main_file,
         )
         self.main_file = main_file
+        self.use_buffer = use_buffer
         self.filename = os.path.basename(self.main_file)
         self.builder = Builder()
         self.monitor = TestedAppMonitor(self.builder.build_dir)
@@ -68,8 +69,12 @@ class ScriptRunner:
         for i in range(num):
             python_exe = f"{self.builder.build_dir}/venv/bin/python"
             script_path = os.path.join(self.builder.build_dir, self.filename)
+            if self.use_buffer:
+                cmd_args = [python_exe, script_path]
+            else:
+                cmd_args = [python_exe, "-u", script_path]
             process = subprocess.Popen(
-                [python_exe,"-u", script_path],
+                cmd_args,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE
             )
