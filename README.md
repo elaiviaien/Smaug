@@ -33,7 +33,20 @@ For more information on the available arguments, you can use the `-h` or `--help
 ```bash
 python3 main.py -h
 ```
+Result:
+```bash
+usage: main.py [-h] [-mf MAIN_FILE] [-n NUM] [-ub USE_BUFFER]
 
+Run the application with a specified main file.
+
+options:
+  -h, --help            show this help message and exit
+  -mf MAIN_FILE, --main-file MAIN_FILE
+                        The main file to run (path)
+  -n NUM, --num NUM     The number of times to run your script. Default is 1
+  -ub USE_BUFFER, --use-buffer USE_BUFFER
+                        Use buffer for the script output. Default is True
+```
 ## Requirements
 
 Smaug requires Python 3.10<= to run. You can download the latest version of Python from the official website: [https://www.python.org/downloads/](https://www.python.org/downloads/)
