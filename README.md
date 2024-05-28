@@ -59,9 +59,9 @@ To install Smaug, you can simply clone this repository to your local machine:
 git clone https://github.com/elaiviaien/Smaug
 ```
 ### Demo
-We provide a demo script that you can use to test Smaug. The demo script is located in the `use_cases` directory. You can run the demo script with the following command:
+We provide a demo script that you can use to test Smaug. The demo script is located in the `demo` directory. You can run the demo script with the following command:
 ```bash
-python3 main.py -mf use_cases/chrome/main.py -n 1
+python3 main.py -mf demo/chrome/main.py -n 1
 ```
 It will run the demo script once and monitor ( chrome instance ) its performance and resource usage.
 ## To Do
