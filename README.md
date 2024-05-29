@@ -15,7 +15,7 @@ Smaug is a lightweight monitoring tool for Python scripts, much akin to the gran
 
 ## Built With
 
-This project is built exclusively with Python 3 and its standard libraries. No external libraries are used, showcasing the power and versatility of Python's built-in modules. Here are some of the key standard libraries used:
+This project is built exclusively with Python 3 and its standard libraries. No external libraries are used, showcasing the power and versatility of Python's built-in modules.
 ## Usage
 
 To use Smaug, you need to run the `main.py` file with the appropriate arguments. The `-mf` argument is used to specify the path to the script you want to monitor, and the `-n` argument is used to specify the number of times you want to run your script.
