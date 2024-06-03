@@ -100,6 +100,7 @@ class MetricsDisplay:
         else:
             metric_name = table_line.split("|")[1].strip()
             metric_max_value = MAX_VALUES.get(metric_name, 0)
+
             color = self.rate_value_color(
                 float(table_line.split("|")[2].strip()), metric_max_value
             )
@@ -146,7 +147,7 @@ class MetricsDisplay:
             table += (
                 f"| {metric.name.center(metric_col_len)} "
                 f"| {str(metric.value).center(value_col_len)} "
-                f"| {QUANTITIES.get(metric.name).center(q_col_len)} |\n"
+                f"| {QUANTITIES.get(metric.name, 'n').center(q_col_len)} |\n"
             )
         table += split_row
         table_lines = table.split("\n")

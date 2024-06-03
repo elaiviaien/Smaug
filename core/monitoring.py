@@ -93,7 +93,7 @@ class CPUMonitor(LiveMonitor):
             (total_time - idle_time) / total_time * 100 if total_time != 0 else 0
         )
         cpu_usage = round(cpu_usage, 3)
-        return MetricList([Metric("cpu_usage", cpu_usage, int(time.time()))])
+        return MetricList([Metric("cpu usage", cpu_usage, int(time.time()))])
 
     def _get_cpu_times(self) -> list[int]:
         """Return the CPU times."""
@@ -102,9 +102,9 @@ class CPUMonitor(LiveMonitor):
         return list(map(int, cpu_line.split()[1:]))
 
     def get_average(self):
-        records = self.temp_storages["cpu_usage"].get_last_records()
+        records = self.temp_storages["cpu usage"].get_last_records()
         values = [float(record.value) for record in records]
-        return sum(values) / len(values) if values else 0
+        return round(sum(values) / len(values),3) if values else 0
 
 
 class MemoryMonitor(LiveMonitor):
@@ -116,7 +116,7 @@ class MemoryMonitor(LiveMonitor):
             lines = mem.readlines()
 
         meminfo = {
-            l.split(":")[0]: int(l.split(":")[1].strip().split(" ")[0]) for l in lines
+            line.split(":")[0]: int(line.split(":")[1].strip().split(" ")[0]) for line in lines
         }
         total_memory = meminfo["MemTotal"]
         free_memory = meminfo["MemFree"]
@@ -134,7 +134,7 @@ class MemoryMonitor(LiveMonitor):
             lines = mem.readlines()
 
         meminfo = {
-            l.split(":")[0]: int(l.split(":")[1].strip().split(" ")[0]) for l in lines
+            line.split(":")[0]: int(line.split(":")[1].strip().split(" ")[0]) for line in lines
         }
         total_swap = meminfo["SwapTotal"]
         free_swap = meminfo["SwapFree"]
@@ -147,27 +147,27 @@ class MemoryMonitor(LiveMonitor):
         swap_memory_usage = round(self.get_swap_memory_usage(), 3)
         return MetricList(
             [
-                Metric("memory_usage", virtual_memory_usage, int(time.time())),
-                Metric("swap_memory_usage", swap_memory_usage, int(time.time())),
+                Metric("memory usage", virtual_memory_usage, int(time.time())),
+                Metric("swap memory usage", swap_memory_usage, int(time.time())),
             ]
         )
 
     def _get_memory_usage_avg(self) -> float:
         """Return the average memory usage."""
-        records = self.temp_storages["memory_usage"].get_last_records()
+        records = self.temp_storages["memory usage"].get_last_records()
         values = [float(record.value) for record in records]
-        return sum(values) / len(values) if values else 0
+        return round(sum(values) / len(values),3) if values else 0
 
     def _get_swap_memory_usage_avg(self) -> float:
         """Return the average swap memory usage."""
-        records = self.temp_storages["swap_memory_usage"].get_last_records()
+        records = self.temp_storages["swap memory usage"].get_last_records()
         values = [float(record.value) for record in records]
-        return sum(values) / len(values) if values else 0
+        return round(sum(values) / len(values),3) if values else 0
 
     def get_average(self):
         return {
-            "memory_usage": self._get_memory_usage_avg(),
-            "swap_memory_usage": self._get_swap_memory_usage_avg(),
+            "memory usage": self._get_memory_usage_avg(),
+            "swap memory usage": self._get_swap_memory_usage_avg(),
         }
 
 
@@ -184,12 +184,13 @@ class DiskMonitor(StaticMonitor):
 
     def record_stats(self):
         disk_usage = round(self.get_disk_usage("/"), 3)
-        return MetricList([Metric("disk_usage", disk_usage, int(time.time()))])
+        return MetricList([Metric("disk usage", disk_usage, int(time.time()))])
 
     def get_diff(self):
-        return (
-            self.last_records.get("disk_usage").value["used"]
-            - self.first_records.get("disk_usage").value["used"]
+        return round(
+            self.last_records.get("disk usage").value
+            - self.first_records.get("disk usage").value,
+            3
         )
 
 
@@ -198,7 +199,7 @@ class ProcessMonitor(StaticMonitor):
 
     def get_execution_time(self) -> float:
         """Return the execution time."""
-        return time.time() - self.start_time
+        return int(time.time() - self.start_time)
 
     def get_process_info(self, pid: int = os.getpid()) -> str:
         """Return the process information."""
@@ -209,7 +210,7 @@ class ProcessMonitor(StaticMonitor):
 
     def get_total_thread_usage(self) -> int:
         """Return the total number of threads."""
-        result = subprocess.run(["ps", "-eLF"], stdout=subprocess.PIPE, check=True)
+        result = subprocess.run(["ps", "-eLF"], stdout=subprocess.PIPE)
         output = result.stdout.decode()
         header_line_num = 1
         num_threads = len(output.strip().split("\n")) - header_line_num
@@ -220,27 +221,27 @@ class ProcessMonitor(StaticMonitor):
         total_thread_usage = self.get_total_thread_usage()
         return MetricList(
             [
-                Metric("process_info", process_info, int(time.time())),
-                Metric("total_thread_usage", total_thread_usage, int(time.time())),
+                Metric("process info", process_info, int(time.time())),
+                Metric("total thread usage", total_thread_usage, int(time.time())),
             ]
         )
 
     def _get_total_thread_usage_diff(self) -> int:
         return (
-            self.last_records.get("total_thread_usage").value
-            - self.first_records.get("total_thread_usage").value
+            self.last_records.get("total thread usage").value
+            - self.first_records.get("total thread usage").value
         )
 
     def _get_current_thread_usage_diff(self) -> int:
         return (
             self.get_total_thread_usage()
-            - self.first_records.get("total_thread_usage").value
+            - self.first_records.get("total thread usage").value
         )
 
     def get_diff(self):
         return {
-            "total_thread_usage_diff": self._get_total_thread_usage_diff(),
-            "current_thread_usage_diff": self._get_current_thread_usage_diff(),
+            "total thread usage diff": self._get_total_thread_usage_diff(),
+            "current thread usage diff": self._get_current_thread_usage_diff(),
         }
 
 

@@ -6,18 +6,26 @@ import pickle
 
 
 MAX_VALUES = {
-    "cpu_usage": 100,
-    "memory_usage": 100,
-    "swap_memory_usage": 100,
-    "disk_usage": 100,
+    "cpu usage": 100,
+    "cpu average": 100,
+    "memory usage": 100,
+    "memory usage average": 100,
+    "swap memory usage": 100,
+    "swap memory usage average": 100,
+    "disk usage": 100,
 }
 QUANTITIES = {
-    "cpu_usage": "%",
-    "memory_usage": "%",
-    "swap_memory_usage": "%",
-    "disk_usage": "%",
-    "execution_time": "s",
-    "total_thread_usage": "n",
+    "cpu usage": "%",
+    "cpu average": "%",
+    "memory usage": "%",
+    "memory usage average": "%",
+    "swap memory usage": "%",
+    "swap memory usage average": "%",
+    "disk usage": "%",
+    "disk usage difference": "%",
+    "execution time": "s",
+    "total thread usage": "n",
+    "app size":"B"
 }
 
 

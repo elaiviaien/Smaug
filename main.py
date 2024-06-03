@@ -9,6 +9,7 @@ import threading
 import time
 
 from core.logger import setup_logger, LoggerWriter
+from core.metrics import Metric, MetricList
 from core.runner import ScriptRunner
 from core.visual import MetricsDisplay
 
@@ -46,11 +47,29 @@ class App:
     def _collect_data(self) -> None:
         collect_interval = 0.3  # 0.3 seconds
         while not self.stop_flag:
-            metrics = (
-                self.monitor.cpu_monitor.record_stats()
-                + self.monitor.memory_monitor.record_stats()
-                + self.monitor.disk_monitor.record_stats()
-            )
+            epoch_now = int(time.time())
+
+            cpu_metrics = self.monitor.cpu_monitor.record_stats()
+            cpu_metrics.append(Metric('cpu average', self.monitor.cpu_monitor.get_average(), epoch=epoch_now))
+
+            memory_metrics = self.monitor.memory_monitor.record_stats()
+            for key, value in self.monitor.memory_monitor.get_average().items():
+                memory_metrics.append(Metric(f'{key} average', value, epoch=epoch_now))
+
+            disk_metrics = self.monitor.disk_monitor.record_stats()
+            disk_metrics.append(Metric('disk usage difference', self.monitor.disk_monitor.get_diff(), epoch=epoch_now))
+
+            process_metrics = MetricList([
+                Metric('execution time', self.monitor.process_monitor.get_execution_time(), epoch=epoch_now),
+                Metric('total thread usage', self.monitor.process_monitor.get_total_thread_usage(), epoch=epoch_now),
+            ])
+            total_thread_usage_diff = self.monitor.process_monitor.get_diff()['total thread usage diff']
+            process_metrics.append(Metric('total thread usage difference', total_thread_usage_diff, epoch=epoch_now))
+
+            app_size_metric = Metric('app size', self.monitor.get_app_size(), epoch=epoch_now)
+
+            metrics = (cpu_metrics + memory_metrics + disk_metrics + MetricList([app_size_metric]) + process_metrics)
+
             self.display.update(metrics)
             time.sleep(collect_interval)
 
