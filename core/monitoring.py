@@ -1,4 +1,3 @@
-"""This module contains classes for monitoring the CPU, memory, disk, and process."""
 
 import os
 import subprocess
@@ -16,7 +15,6 @@ logger = setup_logger(f"smaug_{os.getpid()}")
 
 
 class StaticMonitor(ABC):
-    """Monitor the metrics statically."""
 
     def __init__(self):
         logger.info("Initializing StaticMonitor for %s", self.__class__.__name__)
@@ -26,20 +24,18 @@ class StaticMonitor(ABC):
 
     @property
     def last_records(self) -> MetricList[Metric]:
-        """Return the last records."""
         return self.record_stats()
 
     @abstractmethod
     def record_stats(self) -> MetricList[Metric]:
-        """Record the statistics."""
+        pass
 
     @abstractmethod
     def get_diff(self) -> dict | float | int:
-        """Return the difference between the first and last records."""
+        pass
 
 
 class LiveMonitor(ABC):
-    """Monitor the metrics live."""
 
     def __init__(self):
         logger.info("Initializing LiveMonitor for %s", self.__class__.__name__)
@@ -62,24 +58,21 @@ class LiveMonitor(ABC):
 
     @abstractmethod
     def record_stats(self) -> list[Metric]:
-        """Record the statistics."""
+        pass
 
     @abstractmethod
     def get_average(self) -> float:
-        """Return the average value of the metric."""
+        pass
 
     def stop(self) -> None:
-        """Stop the monitoring."""
         self.stop_flag = True
         logger.info("Stopping the monitoring thread for %s", self.__class__.__name__)
 
     def is_thread_alive(self) -> bool:
-        """Return True if the 'collect data' thread is alive, False otherwise."""
         return self.collect_data_thread.is_alive()
 
 
 class CPUMonitor(LiveMonitor):
-    """Monitor the CPU."""
 
     def record_stats(self):
         cpu_times1 = self._get_cpu_times()
@@ -96,7 +89,6 @@ class CPUMonitor(LiveMonitor):
         return MetricList([Metric("cpu usage", cpu_usage, int(time.time()))])
 
     def _get_cpu_times(self) -> list[int]:
-        """Return the CPU times."""
         with open("/proc/stat", "r", encoding="utf-8") as file:
             cpu_line = file.readline()
         return list(map(int, cpu_line.split()[1:]))
@@ -108,10 +100,8 @@ class CPUMonitor(LiveMonitor):
 
 
 class MemoryMonitor(LiveMonitor):
-    """Monitor the memory."""
 
     def get_virtual_memory_usage(self) -> float:
-        """Return the virtual memory usage."""
         with open("/proc/meminfo", "r", encoding="utf-8") as mem:
             lines = mem.readlines()
 
@@ -129,7 +119,6 @@ class MemoryMonitor(LiveMonitor):
         return memory_usage
 
     def get_swap_memory_usage(self) -> float:
-        """Return the swap memory usage."""
         with open("/proc/meminfo", "r", encoding="utf-8") as mem:
             lines = mem.readlines()
 
@@ -153,13 +142,11 @@ class MemoryMonitor(LiveMonitor):
         )
 
     def _get_memory_usage_avg(self) -> float:
-        """Return the average memory usage."""
         records = self.temp_storages["memory usage"].get_last_records()
         values = [float(record.value) for record in records]
         return round(sum(values) / len(values),3) if values else 0
 
     def _get_swap_memory_usage_avg(self) -> float:
-        """Return the average swap memory usage."""
         records = self.temp_storages["swap memory usage"].get_last_records()
         values = [float(record.value) for record in records]
         return round(sum(values) / len(values),3) if values else 0
@@ -172,10 +159,8 @@ class MemoryMonitor(LiveMonitor):
 
 
 class DiskMonitor(StaticMonitor):
-    """Monitor the disk."""
 
     def get_disk_usage(self, partition: str) -> float:
-        """Return the disk usage."""
         usage = os.statvfs(partition)
         total = usage.f_blocks * usage.f_frsize
         used = (usage.f_blocks - usage.f_bfree) * usage.f_frsize
@@ -195,21 +180,17 @@ class DiskMonitor(StaticMonitor):
 
 
 class ProcessMonitor(StaticMonitor):
-    """Monitor the process."""
 
     def get_execution_time(self) -> float:
-        """Return the execution time."""
         return int(time.time() - self.start_time)
 
     def get_process_info(self, pid: int = os.getpid()) -> str:
-        """Return the process information."""
         result = subprocess.run(
             ["ps", "-p", str(pid), "-o", "comm="], stdout=subprocess.PIPE, check=True
         )
         return result.stdout.decode().strip()
 
     def get_total_thread_usage(self) -> int:
-        """Return the total number of threads."""
         result = subprocess.run(["ps", "-eLF"], stdout=subprocess.PIPE)
         output = result.stdout.decode()
         header_line_num = 1
@@ -246,7 +227,6 @@ class ProcessMonitor(StaticMonitor):
 
 
 class CombinedMonitor:
-    """Monitor the CPU, memory, disk, and process."""
 
     def __init__(self):
         logger.info("Initializing CombinedMonitor")
@@ -257,7 +237,6 @@ class CombinedMonitor:
         logger.info("Initialized CombinedMonitor")
 
     def stop(self):
-        """Stop the monitoring."""
         logger.info("Stopping CombinedMonitor")
         self.cpu_monitor.stop()
         self.memory_monitor.stop()
@@ -277,12 +256,10 @@ class CombinedMonitor:
 
 
 class TestedAppMonitor(CombinedMonitor):
-    """Monitor the tested application."""
 
     def __init__(self, path: str) -> None:
         self.path = path
         super().__init__()
 
     def get_app_size(self) -> int:
-        """Return the size of the tested application."""
         return os.path.getsize(self.path)

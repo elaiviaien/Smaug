@@ -1,4 +1,3 @@
-"""Storage classes for metrics."""
 
 import os
 import pickle
@@ -13,7 +12,6 @@ logger = setup_logger(f"smaug_{os.getpid()}")
 
 
 class TempStorage:
-    """A temporary storage for metrics."""
 
     def __init__(self, name: str = None, max_size: int = 1000):
         prefix = "smaug_" if not name else f"smaug_{name}_"
@@ -23,12 +21,10 @@ class TempStorage:
         self.max_size = max_size * 1024  # in kilobytes
 
     def save_record(self, data: Metric) -> None:
-        """Save a record to the storage."""
         pickle.dump(data.to_bytes(), self._file)
         self._file.flush()
 
     def get_record(self, epoch: int) -> Metric | None:
-        """Get a record from the storage."""
         self._file.seek(0)
         while True:
             try:
@@ -40,7 +36,6 @@ class TempStorage:
         return None
 
     def get_last_records(self, tail: int = 0) -> list[Metric]:
-        """Get the last N records from the storage."""
         self._file.seek(0)
         records = []
         while True:
@@ -52,7 +47,6 @@ class TempStorage:
         return records[-tail:]
 
     def delete_record(self, epoch: int) -> None:
-        """Delete a record from the storage."""
         self._file.seek(0)
         records = []
         while True:
@@ -73,7 +67,6 @@ class TempStorage:
 
 
 class BatchTempStorage(dict):
-    """A batch temporary storage for metrics."""
 
     def __missing__(self, key: Any) -> TempStorage:
         self[key] = TempStorage(key)

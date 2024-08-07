@@ -12,7 +12,6 @@ logger = setup_logger(f"smaug_{os.getpid()}")
 
 
 class Builder:
-    """Builds a project."""
 
     def __init__(self):
         self.build_dir = tempfile.mkdtemp(prefix="smaug_")
@@ -24,7 +23,6 @@ class Builder:
         )
 
     def copy_files(self, dir_path: str) -> None:
-        """Copy files from the given directory to the build directory."""
         logger.info("Starting to copy files from %s to %s", dir_path, self.build_dir)
         for item in os.listdir(dir_path):
             s = os.path.join(dir_path, item)
@@ -36,13 +34,11 @@ class Builder:
         logger.info("Finished copying files from %s to %s", dir_path, self.build_dir)
 
     def create_venv(self) -> None:
-        """Create a virtual environment."""
         logger.info("Starting to create virtual environment in %s", self.venv_dir)
         venv.create(self.venv_dir, with_pip=True)
         logger.info("Finished creating virtual environment in %s", self.venv_dir)
 
     def install_dependencies(self) -> None:
-        """Install dependencies from requirements.txt."""
         pip_exe = os.path.join(self.venv_dir, "bin", "pip")
         logger.info("Starting to install dependencies using %s", pip_exe)
         try:
@@ -61,7 +57,6 @@ class Builder:
         logger.info("Finished installing dependencies")
 
     def build(self, dir_path: str) -> None:
-        """Build the project."""
         logger.info("Starting to build the project from %s", dir_path)
         self.copy_files(dir_path)
         self.create_venv()

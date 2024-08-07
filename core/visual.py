@@ -1,4 +1,3 @@
-"""A module to display metrics and logs in the terminal."""
 
 import os
 from itertools import zip_longest
@@ -6,10 +5,8 @@ from .metrics import MetricList, MAX_VALUES, QUANTITIES
 
 
 class MetricsDisplay:
-    """A class to display metrics and logs in the terminal."""
 
     def __init__(self):
-        """Initialize the MetricsDisplay object."""
         self.metrics = None
         self.last_update = 0
         self.colors = {
@@ -24,16 +21,13 @@ class MetricsDisplay:
         }
 
     def clear_screen(self) -> None:
-        """Clear the terminal screen."""
         clear_code = "\033c"
         print(clear_code, end="")
 
     def get_terminal_height(self) -> int:
-        """Return the height of the terminal."""
         return os.get_terminal_size().lines
 
     def get_logs(self) -> list[str]:
-        """Return the last N logs from the log file."""
         num_lines = self.get_terminal_height() - 1
         log_files = [
             f for f in os.listdir("logs") if f.startswith(f"smaug_{os.getpid()}_test")
@@ -46,11 +40,9 @@ class MetricsDisplay:
         return logs
 
     def colored(self, text: str, color: str):
-        """Return a colored text."""
         return f"{self.colors[color]} {text}\033[0m"
 
     def color_log(self, log_line: str) -> str:
-        """Color a log line."""
         timestamp_color = "green"
         level_color = "yellow"
         info_color = "blue"
@@ -68,7 +60,6 @@ class MetricsDisplay:
         return f"{timestamp} {level} {info}"
 
     def rate_value_color(self, value: int | float, max_value: int | float) -> str:
-        """Return a color for a value based on a maximum value."""
         default_color = "magenta"
         ok_color = "green"
         warning_color = "yellow"
@@ -82,11 +73,9 @@ class MetricsDisplay:
         return default_color
 
     def color_word(self, word: str, color: str):
-        """Color a word with a specified color."""
         return f"{self.colors[color]}{word}\033[0m"
 
     def color_table(self, table_line: str) -> str:
-        """Color words in a table line."""
         borders_color = "cyan"
         header_color = "cyan"
         if table_line.startswith("+"):
@@ -113,7 +102,6 @@ class MetricsDisplay:
         return table_line
 
     def get_max_len(self) -> int:
-        """Return the maximum length of the metric names and values."""
         return max(
             (
                 len(metric.name)
@@ -124,7 +112,6 @@ class MetricsDisplay:
         )
 
     def display(self) -> None:
-        """Display the metrics and logs."""
         metric_col_len = self.get_max_len() + 2
         value_col_len = 10
         q_col_len = 1
@@ -166,6 +153,5 @@ class MetricsDisplay:
                 print(f"{' '.center(offset)} {self.color_log(log_line)}")
 
     def update(self, new_metrics: MetricList) -> None:
-        """Update the displayed metrics with new metrics."""
         self.metrics = new_metrics
         self.display()

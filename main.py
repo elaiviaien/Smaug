@@ -1,5 +1,3 @@
-""" The main application that runs the script and collects the metrics. """
-
 import argparse
 import logging
 import os
@@ -18,7 +16,6 @@ sys.stderr = LoggerWriter(logger, logging.ERROR)
 
 
 class App:
-    """The main application class that runs the script and collects the metrics."""
 
     def __init__(self, script_file: str, num: int, use_buffer: bool):
         os.makedirs("logs", exist_ok=True)
@@ -36,11 +33,9 @@ class App:
         self._wait_scripts()
 
     def signal_handler(self, signal, frame) -> None:
-        """Handle the SIGINT signal to stop the application."""
         self.stop()
 
     def stop(self) -> None:
-        """Stop the application."""
         self.stop_flag = True
         self.runner.stop()
 
@@ -88,7 +83,6 @@ class App:
             time.sleep(collect_interval)
 
     def _wait_scripts(self) -> None:
-        """Wait for the scripts to finish."""
         for process in self.runner.processes:
             process.wait()
         self.stop()

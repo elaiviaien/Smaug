@@ -1,4 +1,3 @@
-""" Run a script and monitor it. """
 
 import os
 import subprocess
@@ -13,7 +12,6 @@ logger = setup_logger(f"smaug_{os.getpid()}")
 
 
 class ScriptRunner:
-    """Run a script and monitor it."""
 
     def __init__(self, main_file: str, use_buffer: bool):
         logger.info(
@@ -31,14 +29,12 @@ class ScriptRunner:
 
     @property
     def dir_path(self) -> str:
-        """Return the directory path of the main file."""
         if os.path.isabs(self.main_file):
             return os.path.dirname(self.main_file)
         return os.path.dirname(os.path.abspath(self.main_file))
 
     @property
     def main_file(self) -> str:
-        """Return the main file path."""
         return self._main_file
 
     @main_file.setter
@@ -51,7 +47,6 @@ class ScriptRunner:
             raise FileNotFoundError(f"Script {self._main_file} does not exist")
 
     def _log_output(self, process) -> None:
-        """Log the output of the script."""
         test_logger = setup_logger(
             f"smaug_{os.getpid()}_test_{process.pid}", stream_handler=False
         )
@@ -67,7 +62,6 @@ class ScriptRunner:
                 error = process.stderr.readline().decode().strip()
 
     def run_script_in_venv(self, num: int) -> None:
-        """Run the script in a virtual environment."""
         logger.info("Starting to run script in virtual environment %s times", num)
         for _ in range(num):
             python_exe = f"{self.builder.build_dir}/venv/bin/python"
@@ -84,13 +78,11 @@ class ScriptRunner:
         logger.info("Finished running script in virtual environment")
 
     def run(self, num: int = 1) -> None:
-        """Run the script."""
         logger.info("Starting to run the script %s times", num)
         self.run_script_in_venv(num)
         logger.info("Finished running the script")
 
     def stop(self) -> None:
-        """Stop the script execution and monitoring."""
         logger.info("Stopping the script execution and monitoring")
         for process in self.processes:
             process.terminate()
